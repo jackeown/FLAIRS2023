@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>RL in E</title>
 
 		<link rel="stylesheet" href="css/reset.css">
 		<link rel="stylesheet" href="css/reveal.css">
@@ -60,15 +60,22 @@
 				text-decoration: underline;
 			}
 
+			.smallfont{
+				font-size:0.8em;
+			}
+
+			.smallerfont{
+				font-size: 0.7em;
+			}
+
 
 		</style>
 		<div class="reveal">
 			<div class="slides">
 				<section>
-					<h3>Reinforcement Learning for the E Theorem Prover</h3>
+					<h3>Reinforcement Learning for the <br>E Theorem Prover</h3>
 					<hr>
-					<h4>Jack McKeown</h4>
-					<h6>Advised by Geoff Sutcliffe</h6>
+					<h4>Jack McKeown & Geoff Sutcliffe</h4>
 				</section>
 
 				<section id="outline">
@@ -83,6 +90,7 @@
 							<li class="fragment">Future Research</li>
 						</ol>
 					</div>
+					<aside>Testing Speaker notes...</aside>
 				</section>
 
 				<section id="fol-cnf">
@@ -121,9 +129,10 @@
 				<section id="saturation">
 					<section>
 						<h3>"Saturation-based" Theorem Proving</h3>
-						<div style="text-align:left; font-size:0.9em;">
+						<div style="text-align:left; font-size:0.85em;">
 							<span class="green">Saturation:</span> computing the closure of a set of statements with respect to a complete set of inference rules.
 							<span class="fragment"><hr>For a set consisting of axioms and the negation of an entailed conjecture, this closure <span class="emph" style="text-decoration: underline;">must</span> include <span class="red">false</span> </span>
+							<span class="fragment"><hr>A <span class="green">conjecture</span> is therefore proved by searching for the empty clause by <span class="green">saturating the set $Ax\; \cup \sim C$</span></span> 
 						</div>
 
 						
@@ -242,8 +251,51 @@ Example "heuristic" in RL mode:
 
 				<section>
 					<section>
-						<h3>Experimental Setup</h3>
+						<h3>Experiment Architecture</h3>
 						<img src="images/architecture.svg" style="background:whitesmoke">
+					</section>
+
+					<section>
+						<h3>Approaches Compared</h3>
+						<ul class="smallerfont">
+							<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
+								<span class="green" style="text-decoration:underline">--auto</span>:
+								<span class="smallfont fragment">E's mode that analyzes a problem to choose a fixed heuristic</span>
+							</li>
+							<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
+								<span class="green" style="text-decoration:underline">Round Robin</span>:
+								<span class="smallfont fragment">
+									A round-robin schedule over the 20 chosen CEFs
+									<br><span class="red">(A normal E heuristic with all ones for weights)</span>
+								</span>
+							</li>
+							<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
+								<span class="green" style="text-decoration:underline">Learned Categorical</span>:
+								<span class="smallfont fragment">
+									Randomly samples from a learned categorical distribution
+									<br><span class="red">(Ignores the RL state entirely)</span>
+								</span>
+							</li>
+							<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
+								<span class="green" style="text-decoration:underline">Distilled Categorical</span>:
+								<span class="smallfont fragment">
+									The previous policy reduced into a standard E heuristic. 
+									<br><span class="red">(Removes the randomness and named pipe overhead)</span>
+								</span>
+							</li>
+							<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
+								<span class="green" style="text-decoration:underline">Neural Network</span>:
+								<span class="smallfont fragment">A shallow (3-layer) neural network policy</span>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3>Experiment Details</h3>
+						<ul class="smallerfont">
+							<li class="fragment">CPU Limit for proof attempts: <span class="green">60 seconds</span></li>
+							<li class="fragment"><span class="green">75 seconds</span> were given when testing the RL models to account for latency caused by the named pipe communication</li>
+						</ul>
 					</section>
 
 					<section>
@@ -260,7 +312,7 @@ Example "heuristic" in RL mode:
 							  </tr>
 							</thead>
 							<tbody>
-							  <tr>
+							  <tr class="fragment">
 								<td style="text-align:left"><span class="green">Problems Proved</span></td>
 								<td style="text-align:right">228.2</td>
 								<td style="text-align:right">232.0</td>
@@ -268,7 +320,7 @@ Example "heuristic" in RL mode:
 								<td style="text-align:right"><span class="green">232.2</span></td>
 								<td style="text-align:right">231.3</td>
 							  </tr>
-							  <tr>
+							  <tr class="fragment">
 								<td style="text-align:left"><span class="green">Given Clauses</span></td>
 								<td style="text-align:right">4407.8</td>
 								<td style="text-align:right">2329.0</td>
@@ -276,7 +328,7 @@ Example "heuristic" in RL mode:
 								<td style="text-align:right">2262.6</td>
 								<td style="text-align:right"><span class="green">2013.0</span></td>
 							  </tr>
-							  <tr>
+							  <tr class="fragment">
 								<td style="text-align:left"><span class="green">Fewer Given Clauses than --auto</span></td>
 								<td style="text-align:right">0</td>
 								<td style="text-align:right">1895.6</td>
@@ -289,16 +341,19 @@ Example "heuristic" in RL mode:
 					</section>
 
 					<section>
-						<h3>Analysis of Actor</h3>
+						<h3>Analysis of Actor
+							<span class="green">(MPT1152+1.p)</span>
+
+						</h3>
 						<div class="row" style="justify-content: space-around;opacity:0.8;">
-							<img src="images/actor1.png" style="scale:0.95;">
-							<img src="images/actor2.png" style="scale:0.95;">
+							<img class="fragment" src="images/actor1.png" style="scale:0.95;">
+							<img class="fragment" src="images/actor2.png" style="scale:0.95;">
 						</div>
 					</section>
 
 					<section>
 						<h3>Analysis of Critic</h3>
-						<div class="row" style="opacity:0.8">
+						<div class="row">
 							<img src="images/critic.png">
 						</div>
 					</section>
@@ -309,7 +364,7 @@ Example "heuristic" in RL mode:
 					<h3>Future Research</h3>
 					<ul>
 						<li class="fragment">Use the critic inside E with Monte-Carlo Tree Search</li>
-						<li class="fragment">If that works well, learn actor and critic using MCTS a la AlphaZero</li>
+						<li class="fragment">If that works well, learn actor and critic using MCTS as in AlphaGo/AlphaZero/MuZero</li>
 					</ul>
 				</section>
 
