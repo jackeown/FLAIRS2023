@@ -1,157 +1,194 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>RL in E</title>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<link rel="stylesheet" href="css/reset.css">
-		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css">
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
+	<title>RL in E</title>
 
-
-		<!-- Theme used for syntax highlighting of code -->
-		<link rel="stylesheet" href="lib/css/monokai.css">
-
-		<!-- Printing and PDF exports -->
-		<script>
-			var link = document.createElement( 'link' );
-			link.rel = 'stylesheet';
-			link.type = 'text/css';
-			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
-			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
-	</head>
-	<body>
-		<style>
-			.reveal i{
-				font-family: 'FontAwesome';
-				font-style: normal;
-			}
-			.red{
-				color:rgb(255, 150, 150);
-			}
-			.green{
-				color:rgb(150, 255, 150);
-			}
-			.yellow{
-				color:rgb(255, 255, 123);
-			}
-			.blue{
-				color:rgb(150,150,255);
-			}
-			.row{
-				display:flex;
-				flex-direction:row;
-				justify-content: space-around;
-			}
-			.box{
-				border:1px solid white;
-				padding:15px;
-				margin:5px;
-				font-size:24pt;
-			}
-			.emph{
-				font-style:italic;
-			}
-			.ul{
-				text-decoration: underline;
-			}
-
-			.smallfont{
-				font-size:0.8em;
-			}
-
-			.smallerfont{
-				font-size: 0.7em;
-			}
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/black.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
+		integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" />
 
 
-		</style>
-		<div class="reveal">
-			<div class="slides">
-				<section>
-					<h3>Reinforcement Learning for the <br>E Theorem Prover</h3>
-					<hr>
-					<h4>Jack McKeown & Geoff Sutcliffe</h4>
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/monokai.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+</head>
+
+<body>
+	<style>
+		.reveal i {
+			font-family: 'FontAwesome';
+			font-style: normal;
+		}
+
+		.red {
+			color: rgb(255, 150, 150);
+		}
+
+		.green {
+			color: rgb(150, 255, 150);
+		}
+
+		.yellow {
+			color: rgb(255, 255, 123);
+		}
+
+		.blue {
+			color: rgb(150, 150, 255);
+		}
+
+		.row {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-around;
+		}
+
+		.box {
+			border: 1px solid white;
+			padding: 15px;
+			margin: 5px;
+			font-size: 24pt;
+		}
+
+		.emph {
+			font-style: italic;
+		}
+
+		.ul {
+			text-decoration: underline;
+		}
+
+		.smallfont {
+			font-size: 0.8em;
+		}
+
+		.smallerfont {
+			font-size: 0.7em;
+		}
+	</style>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<h3>Reinforcement Learning for the <br>E Theorem Prover</h3>
+				<hr>
+				<h4>Jack McKeown & Geoff Sutcliffe</h4>
+				<aside class="notes">
+					Hi. My name is Jack McKeown and today I'll be talking about the work my advisor Geoff Sutcliffe and I have been working on
+					and the approach we're taking to incorporate reinforcement learning into an automated theorem prover called "E".
+				</aside>
+			</section>
+
+			<section id="outline">
+				<h3>Outline</h3>
+				<div class="box">
+					<ol>
+						<li class="fragment">First-Order Logic & CNF</li>
+						<li class="fragment">Saturation-based ATP & Given Clause Selection</li>
+						<li class="fragment">E heuristics</li>
+						<li class="fragment">Reinforcement Learning & Proximal Policy Optimization</li>
+						<li class="fragment">Experiments, Results, & Analysis</li>
+						<li class="fragment">Future Research</li>
+					</ol>
+				</div>
+				<aside class="notes">
+					First, I'll give an overview of automated theorem proving and the problem we're trying to solve,
+					then I'll give an overview of the relevant reinforcement learning concepts,
+					and then I'll be able to explain how we are using reinforcement learning in our attempt to solve the theorem proving problem.
+					
+					I'll explain our experimental setup and the results we've obtained so far.
+					and conclude with some analysis of our results and a discussion of potential directions for future research.
+				</aside>
+			</section>
+
+			<section id="fol-cnf">
+				<section id="fol">
+					<h3>First Order Logic</h3>
+
+					An example first order statement:
+					<span class="green">
+						$$ \forall X \exists Y : p(X,f(Y)) \; | \; (q(X)\wedge q(Y))$$
+					</span>
+					<ul style="font-size:0.8em;">
+						<li class="fragment"><span class="green">$\forall X \exists Y$</span>: Variables &
+							Quantification</li>
+						<li class="fragment"><span class="green">$f(Y)$</span>: A <em
+								style="text-decoration: underline;">term</em> formed by the application of a <em
+								style="text-decoration: underline;">function</em> to a variable</li>
+						<li class="fragment">Constants are functions of arity zero.</li>
+					</ul>
+
+					<aside class="notes"></aside>
 				</section>
 
-				<section id="outline">
-					<h3>Outline</h3>
+				<section id="cnf">
+					<h3>Clause Normal Form</h3>
 					<div class="box">
-						<ol>
-							<li class="fragment">First-Order Logic & CNF</li>
-							<li class="fragment">Saturation-based ATP & Given Clause Selection</li>
-							<li class="fragment">E heuristics</li>
-							<li class="fragment">Reinforcement Learning & Proximal Policy Optimization</li>
-							<li class="fragment">Experiments, Results, & Analysis</li>
-							<li class="fragment">Future Research</li>
-						</ol>
-					</div>
-					<aside class="notes">Testing Speaker notes...</aside>
-				</section>
-
-				<section id="fol-cnf">
-					<section id="fol">
-						<h3>First Order Logic</h3>
-
-						An example first order statement: 
-						<span class="green">
+						This first order statement:
+						<span class="red">
 							$$ \forall X \exists Y : p(X,f(Y)) \; | \; (q(X)\wedge q(Y))$$
 						</span>
-						<ul style="font-size:0.8em;">
-							<li class="fragment"><span class="green">$\forall X \exists Y$</span>: Variables & Quantification</li>
-							<li class="fragment"><span class="green">$f(Y)$</span>: A <em style="text-decoration: underline;">term</em> formed by the application of a <em style="text-decoration: underline;">function</em> to a variable</li>
-							<li class="fragment">Constants are functions of arity zero.</li>
-						</ul>
-					</section>
+						becomes
+						<span class="green">
+							$$ \underbrace{p(X, f(sk(X))) \; | \; q(X)}_{clause} \;\; \bigwedge \;\; \underbrace{p(X,
+							f(sk(X))) \; | \;q(sk(X))}_{clause} $$
+						</span>
+						in Conjunctive/Clause Normal Form (CNF).<br>
+						(In CNF all variables are universally quantified.)
+					</div>
 
-					<section id="cnf">
-						<h3>Clause Normal Form</h3>
-						<div class="box">
-							This first order statement: 
-							<span class="red">
-								$$ \forall X \exists Y : p(X,f(Y)) \; | \; (q(X)\wedge q(Y))$$
-							</span>
-							becomes
-							<span class="green">
-								$$ \underbrace{p(X, f(sk(X))) \; | \; q(X)}_{clause} \;\; \bigwedge \;\; \underbrace{p(X, f(sk(X))) \; | \;q(sk(X))}_{clause} $$
-							</span>
-							in Conjunctive/Clause Normal Form (CNF).<br>
-							(In CNF all variables are universally quantified.)
-						</div>
+					<aside class="notes"></aside>
+				</section>
+			</section>
 
-					</section>
+			<section id="saturation">
+				<section>
+					<h3>"Saturation-based" Theorem Proving</h3>
+					<div style="text-align:left; font-size:0.85em;">
+						<span class="green">Saturation:</span> computing the closure of a set of statements with respect
+						to a complete set of inference rules.
+						<span class="fragment">
+							<hr>For a set consisting of axioms and the negation of an entailed conjecture, this closure
+							<span class="emph" style="text-decoration: underline;">must</span> include <span
+								class="red">false</span>
+						</span>
+						<span class="fragment">
+							<hr>A <span class="green">conjecture</span> is therefore proved by searching for the empty
+							clause by <span class="green">saturating the set $Ax\; \cup \sim C$</span>
+						</span>
+					</div>
+
+					<aside class="notes"></aside>
 				</section>
 
-				<section id="saturation">
-					<section>
-						<h3>"Saturation-based" Theorem Proving</h3>
-						<div style="text-align:left; font-size:0.85em;">
-							<span class="green">Saturation:</span> computing the closure of a set of statements with respect to a complete set of inference rules.
-							<span class="fragment"><hr>For a set consisting of axioms and the negation of an entailed conjecture, this closure <span class="emph" style="text-decoration: underline;">must</span> include <span class="red">false</span> </span>
-							<span class="fragment"><hr>A <span class="green">conjecture</span> is therefore proved by searching for the empty clause by <span class="green">saturating the set $Ax\; \cup \sim C$</span></span> 
-						</div>
-
-						
-					</section>
-
-					<section id="gcs">
-						<h3>Given Clause Selection</h3>
-						<img src="images/processedAndUnprocessedSets.svg" style="background:whitesmoke">
-					</section>
-
+				<section id="gcs">
+					<h3>Given Clause Selection</h3>
+					<img src="images/processedAndUnprocessedSets.svg" style="background:whitesmoke">
+					<aside class="notes"></aside>
 				</section>
 
-				<section id="E">
-					<h3>Given Clause Selection in E</h3>
+			</section>
 
-					<p style="font-size:18pt">Example Clause Evaluation Function (CEF): <span class="green">Clauseweight(<span class="red">PreferGoals</span>, 1,1,1)</span></p>
+			<section id="E">
+				<h3>Given Clause Selection in E</h3>
 
-					<div class="row">
-						<textarea class="fragment" cols="50" rows="7" style="overflow: hidden;">
+				<p style="font-size:18pt">Example Clause Evaluation Function (CEF): <span
+						class="green">Clauseweight(<span class="red">PreferGoals</span>, 1,1,1)</span></p>
+
+				<div class="row">
+					<textarea class="fragment" cols="50" rows="7" style="overflow: hidden;">
 Example "heuristic" in E's --auto mode:
 
 10 * Clauseweight(PreferGoals,1,1,1),
@@ -160,7 +197,7 @@ Example "heuristic" in E's --auto mode:
 1 * FIFOWeight(ConstPrio)
 						</textarea>
 
-						<textarea class="fragment" cols="50" rows="7" style="overflow: hidden;">
+					<textarea class="fragment" cols="50" rows="7" style="overflow: hidden;">
 Example "heuristic" in RL mode:
 
 0.5 * Clauseweight(PreferGoals,1,1,1),
@@ -170,245 +207,279 @@ Example "heuristic" in RL mode:
 ...
 						</textarea>
 
-					</div>
+				</div>
+
+				<aside class="notes"></aside>
+
+			</section>
+
+
+			<section>
+				<section>
+					<h3>RL / Policy Gradients</h3>
+					<ul>
+						<li class="fragment">States, Actions and Rewards</li>
+						<li class="fragment" style="line-height: 1.8em;">Policy:
+							<span class="green fragment box">$\pi(s) = a$</span>
+							<span class="green fragment box">$\sum_a \pi(s,a) = 1$</span>
+						</li>
+						<li class="fragment">Goal: <span class="green">Maximize expected future discounted
+								rewards</span></li>
+						<li class="fragment" style="line-height: 2.1em;">Policy Gradient Loss:
+							$\displaystyle\frac{1}{T}\sum_{t=1}^T [$
+							<span class="green fragment"
+								style="padding:1em 0em;font-size:0.8em;">$-\log{(\pi(s_t,a_t))}$</span>
+							<span class="fragment">
+								$\cdot $
+								<span class="blue">$R_t$</span>
+							</span>
+							$]$
+						</li>
+
+
+						<li class="fragment" style="line-height: 2.1em;">Reducing Variance:
+							$\displaystyle\frac{1}{T}\sum_{t=1}^T [$
+							<span class="green fragment"
+								style="padding:1em 0em;font-size:0.8em;">$-\log{(\pi(s_t,a_t))}$</span>
+							<span class="fragment">
+								$\cdot $
+								<span class="red">$A_t$</span>
+							</span>
+							$]$
+						</li>
+						<li class="fragment">
+							<span class="red">
+								$A_t$
+							</span>
+							$=$
+							<span class="blue">$R_t$</span> $- V(s_t)$
+						</li>
+					</ul>
+
+					<aside class="notes"></aside>
+				</section>
+
+				<section>
+					<h3>Proximal Policy Optimization</h3>
+					<ul style="font-size:0.7em;">
+						<li class="fragment">Simpler successor to Trust Region Policy Optimization (TRPO)</li>
+						<li class="fragment">Main Idea: <span class="green">Learn from the same data multiple times in
+								mini-batches <br>without drastically affecting the current policy.</span></li>
+						<li class="fragment">A special loss limits the gradient so that <span
+								class="green">$0.8\pi_{old}(s,a) \leq \pi(s,a) \leq 1.2\pi_{old}(s,a)$</span></li>
+						<ul>
+							<li class="fragment">$r_t(\theta) = \frac{\pi_{\theta}(a_t | s_t)}{\pi_{\theta_{old}}(a_t |
+								s_t)}$</li>
+							<li class="fragment">$L_{actor}(\theta) = \displaystyle\frac{1}{T}\sum_{t=1}^T [min($ <span
+									class="green">$r_t(\theta)A_t$</span> $, $ <span class="red">$clip(r_t(\theta),
+									1-\epsilon, 1+\epsilon)A_t$</span> $)]$</li>
+						</ul>
+					</ul>
+					<aside class="notes"></aside>
 				</section>
 
 
 				<section>
-					<section>
-						<h3>RL / Policy Gradients</h3>
-						<ul>
-							<li class="fragment">States, Actions and Rewards</li>
-							<li class="fragment" style="line-height: 1.8em;">Policy: 
-								<span class="green fragment box">$\pi(s) = a$</span>
-								<span class="green fragment box">$\sum_a \pi(s,a) = 1$</span> 
-							</li>
-							<li class="fragment">Goal: <span class="green">Maximize expected future discounted rewards</span></li>
-							<li class="fragment" style="line-height: 2.1em;">Policy Gradient Loss:
-								$\displaystyle\frac{1}{T}\sum_{t=1}^T [$ 
-								<span class="green fragment" style="padding:1em 0em;font-size:0.8em;">$-\log{(\pi(s_t,a_t))}$</span>
-								<span class="fragment">
-									$\cdot $ 
-									<span class="blue">$R_t$</span>
-								</span>
-								$]$
-							</li>
+					<h3>RL in E</h3>
+					<ul>
+						<li class="fragment">States:
+							<span class="green fragment">
+								$($
+								<span class="fragment">$t$</span>,
+								<span class="fragment">$|P|$</span>,
+								<span class="fragment">$|U|$</span>,
+								<span class="fragment">$W(P)$</span>,
+								<span class="fragment">$W(U)$</span>
+								$)$
+							</span>
+						</li>
+						<li class="fragment">Actions: <span class="green fragment">choice from a fixed set of
+								CEFs</span></li>
+						<li class="fragment">Rewards: <span class="green fragment">selection of clauses in the
+								proof</span></li>
+					</ul>
+					<aside class="notes"></aside>
+
+				</section>
+			</section>
 
 
-							<li class="fragment" style="line-height: 2.1em;">Reducing Variance:
-								$\displaystyle\frac{1}{T}\sum_{t=1}^T [$ 
-								<span class="green fragment" style="padding:1em 0em;font-size:0.8em;">$-\log{(\pi(s_t,a_t))}$</span>
-								<span class="fragment">
-									$\cdot $ 
-									<span class="red">$A_t$</span>
-								</span>
-								$]$
-							</li>
-							<li class="fragment">
-								<span class="red">
-									$A_t$
-								</span>
-								 $=$
-								<span class="blue">$R_t$</span> $- V(s_t)$
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h3>Proximal Policy Optimization</h3>
-						<ul style="font-size:0.7em;">
-							<li class="fragment">Simpler successor to Trust Region Policy Optimization (TRPO)</li>
-							<li class="fragment">Main Idea: <span class="green">Learn from the same data multiple times in mini-batches <br>without drastically affecting the current policy.</span></li>
-							<li class="fragment">A special loss limits the gradient so that <span class="green">$0.8\pi_{old}(s,a) \leq \pi(s,a) \leq 1.2\pi_{old}(s,a)$</span></li>
-							<ul>
-								<li class="fragment">$r_t(\theta) = \frac{\pi_{\theta}(a_t | s_t)}{\pi_{\theta_{old}}(a_t | s_t)}$</li>
-								<li class="fragment">$L_{actor}(\theta) = \displaystyle\frac{1}{T}\sum_{t=1}^T [min($ <span class="green">$r_t(\theta)A_t$</span> $, $ <span class="red">$clip(r_t(\theta), 1-\epsilon, 1+\epsilon)A_t$</span> $)]$</li>
-							</ul>
-						</ul>
-					</section>
-
-
-					<section>
-						<h3>RL in E</h3>
-						<ul>
-							<li class="fragment">States: 
-								<span class="green fragment">
-									$($
-									<span class="fragment">$t$</span>,
-									<span class="fragment">$|P|$</span>, 
-									<span class="fragment">$|U|$</span>, 
-									<span class="fragment">$W(P)$</span>,
-									<span class="fragment">$W(U)$</span>
-									$)$
-								</span>
-							</li>
-							<li class="fragment">Actions: <span class="green fragment">choice from a fixed set of CEFs</span></li>
-							<li class="fragment">Rewards: <span class="green fragment">selection of clauses in the proof</span></li>
-						</ul>
-					</section>
+			<section>
+				<section>
+					<h3>Experiment Architecture</h3>
+					<img src="images/architecture.svg" style="background:whitesmoke">
+					<aside class="notes"></aside>
 				</section>
 
+				<section>
+					<h3>Approaches Compared</h3>
+					<ul class="smallerfont">
+						<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
+							<span class="green" style="text-decoration:underline">--auto</span>:
+							<span class="smallfont fragment">E's mode that analyzes a problem to choose a fixed
+								heuristic</span>
+						</li>
+						<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
+							<span class="green" style="text-decoration:underline">Round Robin</span>:
+							<span class="smallfont fragment">
+								A round-robin schedule over the 20 chosen CEFs
+								<br><span class="red">(A normal E heuristic with all ones for weights)</span>
+							</span>
+						</li>
+						<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
+							<span class="green" style="text-decoration:underline">Learned Categorical</span>:
+							<span class="smallfont fragment">
+								Randomly samples from a learned categorical distribution
+								<br><span class="red">(Ignores the RL state entirely)</span>
+							</span>
+						</li>
+						<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
+							<span class="green" style="text-decoration:underline">Distilled Categorical</span>:
+							<span class="smallfont fragment">
+								The previous policy reduced into a standard E heuristic.
+								<br><span class="red">(Removes the randomness and named pipe overhead)</span>
+							</span>
+						</li>
+						<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
+							<span class="green" style="text-decoration:underline">Neural Network</span>:
+							<span class="smallfont fragment">A shallow (3-layer) neural network policy</span>
+						</li>
+					</ul>
+					<aside class="notes"></aside>
+
+				</section>
 
 				<section>
-					<section>
-						<h3>Experiment Architecture</h3>
-						<img src="images/architecture.svg" style="background:whitesmoke">
-					</section>
+					<h3>Experiment Details</h3>
+					<ul class="smallerfont">
+						<li class="fragment">CPU Limit for proof attempts: <span class="green">60 seconds</span></li>
+						<li class="fragment"><span class="green">75 seconds</span> were given when testing the RL models
+							to account for latency caused by the named pipe communication</li>
+					</ul>
+					<aside class="notes"></aside>
+				</section>
 
-					<section>
-						<h3>Approaches Compared</h3>
-						<ul class="smallerfont">
-							<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
-								<span class="green" style="text-decoration:underline">--auto</span>:
-								<span class="smallfont fragment">E's mode that analyzes a problem to choose a fixed heuristic</span>
-							</li>
-							<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
-								<span class="green" style="text-decoration:underline">Round Robin</span>:
-								<span class="smallfont fragment">
-									A round-robin schedule over the 20 chosen CEFs
-									<br><span class="red">(A normal E heuristic with all ones for weights)</span>
-								</span>
-							</li>
-							<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
-								<span class="green" style="text-decoration:underline">Learned Categorical</span>:
-								<span class="smallfont fragment">
-									Randomly samples from a learned categorical distribution
-									<br><span class="red">(Ignores the RL state entirely)</span>
-								</span>
-							</li>
-							<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
-								<span class="green" style="text-decoration:underline">Distilled Categorical</span>:
-								<span class="smallfont fragment">
-									The previous policy reduced into a standard E heuristic. 
-									<br><span class="red">(Removes the randomness and named pipe overhead)</span>
-								</span>
-							</li>
-							<li class="fragment" style="margin-bottom:10px;line-height:1.3em;">
-								<span class="green" style="text-decoration:underline">Neural Network</span>:
-								<span class="smallfont fragment">A shallow (3-layer) neural network policy</span>
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h3>Experiment Details</h3>
-						<ul class="smallerfont">
-							<li class="fragment">CPU Limit for proof attempts: <span class="green">60 seconds</span></li>
-							<li class="fragment"><span class="green">75 seconds</span> were given when testing the RL models to account for latency caused by the named pipe communication</li>
-						</ul>
-					</section>
-
-					<section>
-						<h3>Results</h3>
-						<table style="font-size:0.7em;">
-							<thead>
-							  <tr>
+				<section>
+					<h3>Results</h3>
+					<table style="font-size:0.7em;">
+						<thead>
+							<tr>
 								<th></th>
 								<th style="text-align:right"><span class="green">--auto</span></th>
 								<th style="text-align:right"><span class="green">Round Robin</span></th>
 								<th style="text-align:right"><span class="green">Learned Categorical</span></th>
 								<th style="text-align:right"><span class="green">Distilled Categorical</span></th>
 								<th style="text-align:right"><span class="green">Neural Network</span></th>
-							  </tr>
-							</thead>
-							<tbody>
-							  <tr class="fragment">
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="fragment">
 								<td style="text-align:left"><span class="green">Problems Proved</span></td>
 								<td style="text-align:right">228.2</td>
 								<td style="text-align:right">232.0</td>
 								<td style="text-align:right">231.6</td>
 								<td style="text-align:right"><span class="green">232.2</span></td>
 								<td style="text-align:right">231.3</td>
-							  </tr>
-							  <tr class="fragment">
+							</tr>
+							<tr class="fragment">
 								<td style="text-align:left"><span class="green">Given Clauses</span></td>
 								<td style="text-align:right">4407.8</td>
 								<td style="text-align:right">2329.0</td>
 								<td style="text-align:right">2377.4</td>
 								<td style="text-align:right">2262.6</td>
 								<td style="text-align:right"><span class="green">2013.0</span></td>
-							  </tr>
-							  <tr class="fragment">
-								<td style="text-align:left"><span class="green">Fewer Given Clauses than --auto</span></td>
+							</tr>
+							<tr class="fragment">
+								<td style="text-align:left"><span class="green">Fewer Given Clauses than --auto</span>
+								</td>
 								<td style="text-align:right">0</td>
 								<td style="text-align:right">1895.6</td>
 								<td style="text-align:right">1743.6</td>
 								<td style="text-align:right"><span class="green">1899.0</span></td>
 								<td style="text-align:right">1897.6</td>
-							  </tr>
-							</tbody>
-						  </table>
-					</section>
+							</tr>
+						</tbody>
+					</table>
+					<aside class="notes"></aside>
 
-					<section>
-						<h3>Analysis of Actor
-							<span class="green">(MPT1152+1.p)</span>
-
-						</h3>
-						<div class="row" style="justify-content: space-around;opacity:0.8;">
-							<img class="fragment" src="images/actor1.png" style="scale:0.95;">
-							<img class="fragment" src="images/actor2.png" style="scale:0.95;">
-						</div>
-					</section>
-
-					<section>
-						<h3>Analysis of Critic</h3>
-						<div class="row">
-							<img src="images/critic.png">
-						</div>
-					</section>
 				</section>
-
 
 				<section>
-					<h3>Future Research</h3>
-					<ul>
-						<li class="fragment">Use the critic inside E with Monte-Carlo Tree Search</li>
-						<li class="fragment">If that works well, learn actor and critic using MCTS as in AlphaGo/AlphaZero/MuZero</li>
-					</ul>
-				</section>
+					<h3>Analysis of Actor
+						<span class="green">(MPT1152+1.p)</span>
+					</h3>
+					<div class="row" style="justify-content: space-around;opacity:0.8;">
+						<img class="fragment" src="images/actor1.png" style="scale:0.95;">
+						<img class="fragment" src="images/actor2.png" style="scale:0.95;">
+					</div>
+					<aside class="notes"></aside>
 
+				</section>
 
 				<section>
-					<h3>Thanks for listening</h3>
-					<em class="green">Questions?</em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<em class="green">Suggestions?</em><br>
-				</section>
+					<h3>Analysis of Critic</h3>
+					<div class="row">
+						<img src="images/critic.png">
+					</div>
+					<aside class="notes"></aside>
 
-			</div>
+				</section>
+			</section>
+
+
+			<section>
+				<h3>Future Research</h3>
+				<ul>
+					<li class="fragment">Use the critic inside E with Monte-Carlo Tree Search</li>
+					<li class="fragment">If that works well, learn actor and critic using MCTS as in
+						AlphaGo/AlphaZero/MuZero</li>
+				</ul>
+				<aside class="notes"></aside>
+			</section>
+
+
+			<section>
+				<h3>Thanks for listening</h3>
+				<em
+					class="green">Questions?</em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<em class="green">Suggestions?</em><br>
+			</section>
+
 		</div>
+	</div>
 
-		<script src="js/reveal.js"></script>
+	<script src="js/reveal.js"></script>
 
-		<script>
-			// More info about config & dependencies:
-			// - https://github.com/hakimel/reveal.js#configuration
-			// - https://github.com/hakimel/reveal.js#dependencies
-			Reveal.initialize({
-				hash: true,
-				math: {
-					mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
-					config: 'TeX-AMS_HTML-full', // See http://docs.mathjax.org/en/latest/config-files.html
-					// pass other options into `MathJax.Hub.Config()`
-					TeX: { Macros: { RR: "{\\bf R}" } }
-				},
+	<script>
+		// More info about config & dependencies:
+		// - https://github.com/hakimel/reveal.js#configuration
+		// - https://github.com/hakimel/reveal.js#dependencies
+		Reveal.initialize({
+			hash: true,
+			math: {
+				mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+				config: 'TeX-AMS_HTML-full', // See http://docs.mathjax.org/en/latest/config-files.html
+				// pass other options into `MathJax.Hub.Config()`
+				TeX: { Macros: { RR: "{\\bf R}" } }
+			},
 
-				dependencies: [
-					{ src: 'plugin/markdown/marked.js' },
-					{ src: 'plugin/markdown/markdown.js' },
-					{ src: 'plugin/highlight/highlight.js' },
-					{ src: 'plugin/notes/notes.js', async: true },
-					{ src: 'plugin/math/math.js', async: true }
-				]
-			});
+			dependencies: [
+				{ src: 'plugin/markdown/marked.js' },
+				{ src: 'plugin/markdown/markdown.js' },
+				{ src: 'plugin/highlight/highlight.js' },
+				{ src: 'plugin/notes/notes.js', async: true },
+				{ src: 'plugin/math/math.js', async: true }
+			]
+		});
 
 
-			document.addEventListener("keypress", function(e){
-				if (e.key == 'u'){
-					document.querySelector("#outline").classList.add("floatingOutline")
-				}
-			})
+		document.addEventListener("keypress", function (e) {
+			if (e.key == 'u') {
+				document.querySelector("#outline").classList.add("floatingOutline")
+			}
+		})
 
-		</script>
-	</body>
+	</script>
+</body>
+
 </html>
