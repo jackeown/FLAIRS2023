@@ -86,8 +86,10 @@
 				<hr>
 				<h4>Jack McKeown & Geoff Sutcliffe</h4>
 				<aside class="notes">
-					Hi. My name is Jack McKeown and today I'll be talking about the work my advisor Geoff Sutcliffe and I have been working on
-					and the approach we're taking to incorporate reinforcement learning into an automated theorem prover called "E".
+					Hi. My name is Jack McKeown and today I'll be talking about the work my advisor Geoff Sutcliffe and
+					I have been working on
+					and the approach we're taking to incorporate reinforcement learning into an automated theorem prover
+					called "E".
 				</aside>
 			</section>
 
@@ -106,10 +108,12 @@
 				<aside class="notes">
 					First, I'll give an overview of automated theorem proving and the problem we're trying to solve,
 					then I'll give an overview of the relevant reinforcement learning concepts,
-					and then I'll be able to explain how we are using reinforcement learning in our attempt to solve the theorem proving problem.
-					
+					and then I'll be able to explain how we are using reinforcement learning in our attempt to solve the
+					theorem proving problem.
+
 					I'll explain our experimental setup and the results we've obtained so far.
-					and conclude with some analysis of our results and a discussion of potential directions for future research.
+					and conclude with some analysis of our results and a discussion of potential directions for future
+					research.
 				</aside>
 			</section>
 
@@ -117,10 +121,6 @@
 				<section id="fol">
 					<h3>First Order Logic</h3>
 
-					An example first order statement:
-					<span class="green">
-						$$ \forall X \exists Y : p(X,f(Y)) \; | \; (q(X)\wedge q(Y))$$
-					</span>
 					<ul style="font-size:0.8em;">
 						<li class="fragment"><span class="green">$\forall X \exists Y$</span>: Variables &
 							Quantification</li>
@@ -128,9 +128,27 @@
 								style="text-decoration: underline;">term</em> formed by the application of a <em
 								style="text-decoration: underline;">function</em> to a variable</li>
 						<li class="fragment">Constants are functions of arity zero.</li>
+						<li class="fragment">logical-constants can be viewed as predicates of arity-zero.</li>
 					</ul>
+					<span class="fragment">
+						An example first order statement:
+						<span class="green">
+							$$ \forall X \exists Y : p(X,f(Y)) \; | \; (q(X)\wedge q(Y))$$
+						</span>
+					</span>
 
-					<aside class="notes"></aside>
+					<aside class="notes">
+						Propositional logic is the simplest form of logic that everyone learns in school in a discrete
+						math class.
+						There, you have logical constants (usually given names like 'p' or 'q') and logical connectives
+						(like 'and', 'or', and 'not').
+
+						First order logic extends this by adding variables that can be either existentially or
+						universally quantified.
+						Additionally, there now can be non-logical constants which refer to fixed elements of some
+						"domain" of discourse.
+						Since logical statements in first-order logic still all have boolean values,
+					</aside>
 				</section>
 
 				<section id="cnf">
@@ -149,7 +167,9 @@
 						(In CNF all variables are universally quantified.)
 					</div>
 
-					<aside class="notes"></aside>
+					<aside class="notes">
+
+					</aside>
 				</section>
 			</section>
 
