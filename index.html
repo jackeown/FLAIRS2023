@@ -140,14 +140,18 @@
 					<aside class="notes">
 						Propositional logic is the simplest form of logic that everyone learns in school in a discrete
 						math class.
-						There, you have logical constants (usually given names like 'p' or 'q') and logical connectives
-						(like 'and', 'or', and 'not').
+						There, you have logical constants which map to either true or false and are usually given names like 'p' or 'q'.
+						You also have logical connectives like 'and', 'or', and 'not'.
+						Statements in propositional logic evaluate to true or false based on the rules for the logical connectives and the truth values of the logical constants. 
 
-						First order logic extends this by adding variables that can be either existentially or
+						First-order logic extends this by introducing variables that can be either existentially or
 						universally quantified.
-						Additionally, there now can be non-logical constants which refer to fixed elements of some
-						"domain" of discourse.
-						Since logical statements in first-order logic still all have boolean values,
+						Also, in addition to the *logical*-constants from before, there are now *non*-logical constants which refer to fixed elements of some
+						"domain" of discourse. Functions between domain elements are also introduced, where non-logical constants can just be thought of as functions of arity zero.
+
+						Since statements in first-order logic still have to be evaluated to true or false,
+						these domain elements are eventually mapped to true or false values by some truth-valued function.
+						These functions which output true or false are called predicates and logical-constants can then be thought of as predicates of arity zero.
 					</aside>
 				</section>
 
@@ -168,7 +172,17 @@
 					</div>
 
 					<aside class="notes">
+						For the sake of theorem proving in first-order logic, it is useful to convert statements into
+						a special form called "clause normal form". 
+						This is useful because the inference rules used by theorem provers operate on clauses.
 
+						A first-order statement is in clause normal form if it is a conjunction of clauses 
+						where a clause is a disjunction of literals and there are no existentially quantified variables.
+						In other words, it's an "AND" of "OR"s with no existentially quantified variables.
+
+						In order to remove existentially quantified variables, you can replace the variable with a term representing the 
+						appropriate choice for the variable's value. (If "for all X", "there exists a Y" then replace Y with some function of X that picks the "one that exists".)
+						This is called "skolemization" and the introduced function is called a "skolem function".
 					</aside>
 				</section>
 			</section>
@@ -190,13 +204,35 @@
 						</span>
 					</div>
 
-					<aside class="notes"></aside>
+					<aside class="notes">
+						Although there are other approaches to theorem proving, the most effective provers in recent years have been
+						so-called "saturation-based" provers.
+
+						These provers work by making sound inferences from the union of a set of axioms and the negation of a conjecture
+						in order to derive the empty clause which serves as an explicit witness of a contradiction.
+					</aside>
 				</section>
 
 				<section id="gcs">
 					<h3>Given Clause Selection</h3>
 					<img src="images/processedAndUnprocessedSets.svg" style="background:whitesmoke">
-					<aside class="notes"></aside>
+					<aside class="notes">
+						In practice, two sets of clauses are maintained instead of one.
+						This is done to avoid considering all pairs of clauses when searching for an applicable inference rule.
+
+						These sets are often called the "processed" and "unprocessed" sets of clauses.
+						The processed set starts off empty, and the unprocessed set initially contains all of the axiom and negated conjecture clauses.
+						
+						Proof search proceeds by selecting a clause from the unprocessed set to bring into the processed set.
+						The selected clause is called the "given clause" and the process of selecting it is called "given clause selection".
+						The given clause then "reacts" with the clauses already in the processed set to produce new clauses via the inference rules.
+						The inferred clauses are then added to the unprocessed set.
+						Note that the given clause has to be checked against all clauses in the processed set, but the other clauses in the processed set
+						don't have to be rechecked against each other for inferences. This is why maintaining two sets is useful.
+
+						This loop proceeds until the empty clause is selected.
+						A proof can then be constructed by tracing back through the tree of clauses that led to the empty clause.
+					</aside>
 				</section>
 
 			</section>
@@ -229,7 +265,21 @@ Example "heuristic" in RL mode:
 
 				</div>
 
-				<aside class="notes"></aside>
+				<aside class="notes">
+					Since a proof is only found when the given clause selection loop ends up selecting the empty clause,
+					selecting the right clauses is very important, but it is hard to say which clauses will lead to the derivation of the empty clause.
+					This is the main research problem of this work.
+
+					The way that E allows the user to influence the selection of clauses is through the use of "clause evaluation functions" or CEFs.
+					These are different (but usually pretty simple) functions that are used to assign a score to a clause.
+					They are efficiently implemented in E as priority queues over the clauses in the unprocessed set.
+
+					E then allows users to specify a schedule over whatever CEFs you choose to use.
+					E calls this schedule a "heuristic".
+
+					In our work, instead of using a standard E heuristic, we consider using a neural network to output the parameters
+					of a categorical distribution over the CEFs as a function of E's internal state.
+				</aside>
 
 			</section>
 
