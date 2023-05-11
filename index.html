@@ -118,6 +118,21 @@
 			</section>
 
 			<section id="fol-cnf">
+				<section id="prop">
+					<h3>Propositional Logic</h3>
+					<ul>
+						<li>logical constants (usually $p$, $q$, etc...)</li>
+						<li>logical connectives ($\&, |, \sim, \implies$)</li>
+						<li>Example statement: <span class="green">$(p|q) \implies r$</span></li>
+					</ul>
+					<aside class="notes">
+						Propositional logic is the simplest form of logic that 
+						is typically presented in a discrete math class.
+						There, you have logical constants which map to either true or false and are usually given names like 'p' or 'q'.
+						You also have logical connectives like 'and', 'or', 'not', and implication.
+						Statements in propositional logic evaluate to true or false based on the rules for the logical connectives and the truth values of the logical constants. 
+					</aside>
+				</section>
 				<section id="fol">
 					<h3>First Order Logic</h3>
 
@@ -138,12 +153,6 @@
 					</span>
 
 					<aside class="notes">
-						Propositional logic is the simplest form of logic that everyone learns in school in a discrete
-						math class.
-						There, you have logical constants which map to either true or false and are usually given names like 'p' or 'q'.
-						You also have logical connectives like 'and', 'or', and 'not'.
-						Statements in propositional logic evaluate to true or false based on the rules for the logical connectives and the truth values of the logical constants. 
-
 						First-order logic extends this by introducing variables that can be either existentially or
 						universally quantified.
 						Also, in addition to the *logical*-constants from before, there are now *non*-logical constants which refer to fixed elements of some
@@ -205,8 +214,7 @@
 					</div>
 
 					<aside class="notes">
-						Although there are other approaches to theorem proving, the most effective provers in recent years have been
-						so-called "saturation-based" provers.
+						Although there are other approaches to theorem proving, the most effective provers currently are "saturation-based" provers.
 
 						These provers work by making sound inferences from the union of a set of axioms and the negation of a conjecture
 						in order to derive the empty clause which serves as an explicit witness of a contradiction.
@@ -326,34 +334,66 @@ Example "heuristic" in RL mode:
 						</li>
 					</ul>
 
-					<aside class="notes"></aside>
+					<aside class="notes">
+						Reinforcement learning is a subset of machine learning concerned with taking actions from states
+						to maximize the "rewards" received from some environment.
+
+						Usually this is done without any knowledge of how states transition to other states or what the rewards
+						will be for taking certain actions.
+						Although there are many other ways to do reinforcement learning, we focus on policy gradients.
+						The idea behind policy gradients is to randomly initialize a policy and then use gradient descent to
+						adjust the policy parameters to make actions which precede high rewards more likely.
+
+						You can see this in the loss function, where we minimize the negative log likelihood of
+						the actions we took, weighted by the reward received.
+						
+						A trick that can be done to reduce the variance of the gradient is to subtract a learned value function
+						from the reward. This adjusted reward is called the advantage and is the basis for methods like
+						advantage actor critic and proximal policy optimization.
+					</aside>
 				</section>
 
 				<section>
-					<h3>Proximal Policy Optimization</h3>
+					<h3>Proximal Policy Optimization (PPO)</h3>
 					<ul style="font-size:0.7em;">
 						<li class="fragment">Simpler successor to Trust Region Policy Optimization (TRPO)</li>
 						<li class="fragment">Main Idea: <span class="green">Learn from the same data multiple times in
 								mini-batches <br>without drastically affecting the current policy.</span></li>
-						<li class="fragment">A special loss limits the gradient so that <span
-								class="green">$0.8\pi_{old}(s,a) \leq \pi(s,a) \leq 1.2\pi_{old}(s,a)$</span></li>
-						<ul>
-							<li class="fragment">$r_t(\theta) = \frac{\pi_{\theta}(a_t | s_t)}{\pi_{\theta_{old}}(a_t |
-								s_t)}$</li>
-							<li class="fragment">$L_{actor}(\theta) = \displaystyle\frac{1}{T}\sum_{t=1}^T [min($ <span
-									class="green">$r_t(\theta)A_t$</span> $, $ <span class="red">$clip(r_t(\theta),
-									1-\epsilon, 1+\epsilon)A_t$</span> $)]$</li>
-						</ul>
+						<span class="fragment">
+							<li>A special loss limits the gradient so that 
+								<span class="green">$0.8\pi_{old}(s,a) \leq \pi(s,a) \leq 1.2\pi_{old}(s,a)$</span>
+							</li>
+							<ul>
+								<li>$r_t(\theta) = \frac{\pi_{\theta}(a_t | s_t)}{\pi_{\theta_{old}}(a_t |
+									s_t)}$</li>
+								<li>$L_{actor}(\theta) = \displaystyle\frac{1}{T}\sum_{t=1}^T [min($ 
+									<span class="green">$r_t(\theta)A_t$</span> $, $ 
+									<span class="red">$clip(r_t(\theta),1-\epsilon, 1+\epsilon)A_t$</span> $)]$
+								</li>
+							</ul>
+						</span>
 					</ul>
-					<aside class="notes"></aside>
+					<aside class="notes">
+						Proximal policy optimization, like other actor-critic methods jointly learns two models:
+						the policy (aka actor) and a critic that estimates the value function to reduce the policy gradient variance.
+
+						PPO is a simpler alternative to trust region policy optimization and both of these models
+						try to gain sample efficiency by performing multiple gradient updates on the same data.
+						This is difficult to do because the policy is constantly changing, so the data is no longer
+						representative of the current policy, making the gradient updates invalid.
+
+						To allow for multiple gradient updates, TRPO and PPO both try to limit the magnitude of the
+						overall policy change. Despite taking multiple gradient steps on the same data, the policy
+						is constrained to be close to the original policy.
+					</aside>
 				</section>
 
 
 				<section>
 					<h3>RL in E</h3>
 					<ul>
-						<li class="fragment">States:
-							<span class="green fragment">
+						<li>States:
+							<span class="green">
 								$($
 								<span class="fragment">$t$</span>,
 								<span class="fragment">$|P|$</span>,
@@ -363,12 +403,28 @@ Example "heuristic" in RL mode:
 								$)$
 							</span>
 						</li>
-						<li class="fragment">Actions: <span class="green fragment">choice from a fixed set of
+						<li>Actions: <span class="green fragment">choice from a fixed set of
 								CEFs</span></li>
-						<li class="fragment">Rewards: <span class="green fragment">selection of clauses in the
+						<li>Rewards: <span class="green fragment">selection of clauses in the
 								proof</span></li>
 					</ul>
-					<aside class="notes"></aside>
+					<aside class="notes">
+						To define given clause selection as a reinforcement learning problem, we need to define the
+						states, actions, and rewards.
+
+						The simple state representation we use consists of 5 features:
+						the number of given clause selections performed so far, 
+						the number of clauses in the processed and unprocessed sets, 
+						and the average "weight" of the clauses in the processed and unprocessed sets.
+
+						Instead of representing actions as a choice amongst a varying number of clauses in the unprocessed set
+						we simplify the problem by only allowing the agent to choose from a fixed set of clause evaluation functions.
+						The selected CEF, then selects the given clause.
+						This means that there is always the same set of actions in every state.
+
+						Finally, a reward is given for every action which directly selected a clause that ended up in the proof.
+						If no proof is found before a time limit, then all rewards are zero.
+					</aside>
 
 				</section>
 			</section>
@@ -415,7 +471,10 @@ Example "heuristic" in RL mode:
 							<span class="smallfont fragment">A shallow (3-layer) neural network policy</span>
 						</li>
 					</ul>
-					<aside class="notes"></aside>
+
+					<aside class="notes">
+						(READ AND DESCRIBE SLIDE.)
+					</aside>
 
 				</section>
 
@@ -426,7 +485,9 @@ Example "heuristic" in RL mode:
 						<li class="fragment"><span class="green">75 seconds</span> were given when testing the RL models
 							to account for latency caused by the named pipe communication</li>
 					</ul>
-					<aside class="notes"></aside>
+					<aside class="notes">
+						(READ AND DESCRIBE SLIDE.)
+					</aside>
 				</section>
 
 				<section>
@@ -470,7 +531,19 @@ Example "heuristic" in RL mode:
 							</tr>
 						</tbody>
 					</table>
-					<aside class="notes"></aside>
+					<aside class="notes">
+						So we did some experiments using the MPTPTP2078 dataset and we did 5-fold cross validation.
+
+						The first thing we looked at was the number of problems solved by each approach (averaged across the 5 folds).
+						They all solved roughly the same number of problems, with the distilled categorical model solving the most.
+
+						Next we looked at the number of given clauses it took to find the proofs that that approach found.
+						The neural network policy found proofs with the fewest given clauses on average.
+						This suggests that it may be searching for proofs more efficiently than the other approaches.
+
+						Finally, for each problem solved by both auto and the other approaches, 
+						we looked at how many fewer given clauses each approach took to find a proof.
+					</aside>
 
 				</section>
 
@@ -482,7 +555,17 @@ Example "heuristic" in RL mode:
 						<img class="fragment" src="images/actor1.png" style="scale:0.95;">
 						<img class="fragment" src="images/actor2.png" style="scale:0.95;">
 					</div>
-					<aside class="notes"></aside>
+					<aside class="notes">
+						This graph shows the probability of each CEF being selected by the actor from the initial state of a particular problem.
+						The x-axis here is training time.
+						As you can see, the actor learns to heavily prefer one CEF to use at the beginning of the proof attempt.
+
+						This second graph shows the probability of each CEF being selected by the actor during a proof attempt using the fully trained model.
+						The x-axis here is therefore the given clause selection index.
+
+						As you can see, while the actor learns to heavily prefer one clause for the beginning of a proof attempt,
+						it also learns to be more "fair" in its action choices as a proof attempt proceeds.
+					</aside>
 
 				</section>
 
@@ -491,8 +574,14 @@ Example "heuristic" in RL mode:
 					<div class="row">
 						<img src="images/critic.png">
 					</div>
-					<aside class="notes"></aside>
-
+					<aside class="notes">
+						These histograms show the critic evaluation of the initial states of the problems in the MPTPTP2078 dataset.
+						The green histogram shows the critic evaluation for problems that were able to be solved
+						and the red histogram shows the critic evaluation for problems that were not able to be solved.
+						
+						As shown by the rightward shift of the green histogram, the critic has learned 
+						something about the likelihood of finding a proof even from the initial state.
+					</aside>
 				</section>
 			</section>
 
