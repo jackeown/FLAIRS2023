@@ -106,14 +106,10 @@
 					</ol>
 				</div>
 				<aside class="notes">
-					First, I'll give an overview of automated theorem proving and the problem we're trying to solve,
-					then I'll give an overview of the relevant reinforcement learning concepts,
-					and then I'll be able to explain how we are using reinforcement learning in our attempt to solve the
-					theorem proving problem.
-
-					I'll explain our experimental setup and the results we've obtained so far.
-					and conclude with some analysis of our results and a discussion of potential directions for future
-					research.
+					+ ATP Background and research problem.
+					+ RL Background
+					+ Our experiments and results
+					+ Future research
 				</aside>
 			</section>
 
@@ -153,14 +149,8 @@
 					</span>
 
 					<aside class="notes">
-						First-order logic extends this by introducing variables that can be either existentially or
-						universally quantified.
-						Also, in addition to the *logical*-constants from before, there are now *non*-logical constants which refer to fixed elements of some
-						"domain" of discourse. Functions between domain elements are also introduced, where non-logical constants can just be thought of as functions of arity zero.
-
-						Since statements in first-order logic still have to be evaluated to true or false,
-						these domain elements are eventually mapped to true or false values by some truth-valued function.
-						These functions which output true or false are called predicates and logical-constants can then be thought of as predicates of arity zero.
+						+ Existentially and Universally quantified variables.
+						+ Domain of discourse, non-logical constants, functions, and predicates
 					</aside>
 				</section>
 
@@ -181,17 +171,9 @@
 					</div>
 
 					<aside class="notes">
-						For the sake of theorem proving in first-order logic, it is useful to convert statements into
-						a special form called "clause normal form". 
-						This is useful because the inference rules used by theorem provers operate on clauses.
-
-						A first-order statement is in clause normal form if it is a conjunction of clauses 
-						where a clause is a disjunction of literals and there are no existentially quantified variables.
-						In other words, it's an "AND" of "OR"s with no existentially quantified variables.
-
-						In order to remove existentially quantified variables, you can replace the variable with a term representing the 
-						appropriate choice for the variable's value. (If "for all X", "there exists a Y" then replace Y with some function of X that picks the "one that exists".)
-						This is called "skolemization" and the introduced function is called a "skolem function".
+						+ Theorem provers use inference rules that operate on clauses.
+						+ Conjunction of disjunctions (AND of ORs)
+						+ Skolemization (Removal of existentially quantified variables)
 					</aside>
 				</section>
 			</section>
@@ -214,10 +196,9 @@
 					</div>
 
 					<aside class="notes">
-						Although there are other approaches to theorem proving, the most effective provers currently are "saturation-based" provers.
-
-						These provers work by making sound inferences from the union of a set of axioms and the negation of a conjecture
-						in order to derive the empty clause which serves as an explicit witness of a contradiction.
+						+ The best first-order theorem provers are saturation-based.
+						+ Saturation definition from slide.
+						+ proof by contradiction by searching for empty clause while saturating Ax union ~C.
 					</aside>
 				</section>
 
@@ -225,21 +206,8 @@
 					<h3>Given Clause Selection</h3>
 					<img src="images/processedAndUnprocessedSets.svg" style="background:whitesmoke">
 					<aside class="notes">
-						In practice, two sets of clauses are maintained instead of one.
-						This is done to avoid considering all pairs of clauses when searching for an applicable inference rule.
-
-						These sets are often called the "processed" and "unprocessed" sets of clauses.
-						The processed set starts off empty, and the unprocessed set initially contains all of the axiom and negated conjecture clauses.
-						
-						Proof search proceeds by selecting a clause from the unprocessed set to bring into the processed set.
-						The selected clause is called the "given clause" and the process of selecting it is called "given clause selection".
-						The given clause then "reacts" with the clauses already in the processed set to produce new clauses via the inference rules.
-						The inferred clauses are then added to the unprocessed set.
-						Note that the given clause has to be checked against all clauses in the processed set, but the other clauses in the processed set
-						don't have to be rechecked against each other for inferences. This is why maintaining two sets is useful.
-
-						This loop proceeds until the empty clause is selected.
-						A proof can then be constructed by tracing back through the tree of clauses that led to the empty clause.
+						+ Explain given clause selection loop
+						+ Given clause selection is the most important part of saturation-based theorem proving.
 					</aside>
 				</section>
 
@@ -274,19 +242,9 @@ Example "heuristic" in RL mode:
 				</div>
 
 				<aside class="notes">
-					Since a proof is only found when the given clause selection loop ends up selecting the empty clause,
-					selecting the right clauses is very important, but it is hard to say which clauses will lead to the derivation of the empty clause.
-					This is the main research problem of this work.
-
-					The way that E allows the user to influence the selection of clauses is through the use of "clause evaluation functions" or CEFs.
-					These are different (but usually pretty simple) functions that are used to assign a score to a clause.
-					They are efficiently implemented in E as priority queues over the clauses in the unprocessed set.
-
-					E then allows users to specify a schedule over whatever CEFs you choose to use.
-					E calls this schedule a "heuristic".
-
-					In our work, instead of using a standard E heuristic, we consider using a neural network to output the parameters
-					of a categorical distribution over the CEFs as a function of E's internal state.
+					+ Clause evaluation functions
+					+ Heuristics
+					+ distribution over CEFs
 				</aside>
 
 			</section>
@@ -335,21 +293,10 @@ Example "heuristic" in RL mode:
 					</ul>
 
 					<aside class="notes">
-						Reinforcement learning is a subset of machine learning concerned with taking actions from states
-						to maximize the "rewards" received from some environment.
-
-						Usually this is done without any knowledge of how states transition to other states or what the rewards
-						will be for taking certain actions.
-						Although there are many other ways to do reinforcement learning, we focus on policy gradients.
-						The idea behind policy gradients is to randomly initialize a policy and then use gradient descent to
-						adjust the policy parameters to make actions which precede high rewards more likely.
-
-						You can see this in the loss function, where we minimize the negative log likelihood of
-						the actions we took, weighted by the reward received.
-						
-						A trick that can be done to reduce the variance of the gradient is to subtract a learned value function
-						from the reward. This adjusted reward is called the advantage and is the basis for methods like
-						advantage actor critic and proximal policy optimization.
+						+ taking actions from states to obtain rewards.
+						+ PG Loss is negative log likelihood of actions times future rewards.
+						+ Subtracting baseline can help reduce the PG variance without changing the expected value.
+						+ This is called Actor-critic where the actor is the policy and the critic is the learned baseline.
 					</aside>
 				</section>
 
@@ -374,17 +321,9 @@ Example "heuristic" in RL mode:
 						</span>
 					</ul>
 					<aside class="notes">
-						Proximal policy optimization, like other actor-critic methods jointly learns two models:
-						the policy (aka actor) and a critic that estimates the value function to reduce the policy gradient variance.
-
-						PPO is a simpler alternative to trust region policy optimization and both of these models
-						try to gain sample efficiency by performing multiple gradient updates on the same data.
-						This is difficult to do because the policy is constantly changing, so the data is no longer
-						representative of the current policy, making the gradient updates invalid.
-
-						To allow for multiple gradient updates, TRPO and PPO both try to limit the magnitude of the
-						overall policy change. Despite taking multiple gradient steps on the same data, the policy
-						is constrained to be close to the original policy.
+						+ PPO makes multiple mini-batch gradient steps from a batch of episodes.
+						+ This has potential to be problematic if the policy changes too much as the data is no longer representative.
+						+ PPO limits the magnitude of the overall policy change.
 					</aside>
 				</section>
 
@@ -409,21 +348,11 @@ Example "heuristic" in RL mode:
 								proof</span></li>
 					</ul>
 					<aside class="notes">
-						To define given clause selection as a reinforcement learning problem, we need to define the
-						states, actions, and rewards.
-
-						The simple state representation we use consists of 5 features:
-						the number of given clause selections performed so far, 
-						the number of clauses in the processed and unprocessed sets, 
-						and the average "weight" of the clauses in the processed and unprocessed sets.
-
-						Instead of representing actions as a choice amongst a varying number of clauses in the unprocessed set
-						we simplify the problem by only allowing the agent to choose from a fixed set of clause evaluation functions.
-						The selected CEF, then selects the given clause.
-						This means that there is always the same set of actions in every state.
-
-						Finally, a reward is given for every action which directly selected a clause that ended up in the proof.
-						If no proof is found before a time limit, then all rewards are zero.
+						+ GCS --> RL Problem requires defining states,actions,rewards
+						+ State is a tuple of 5 features
+						+ Action is CEF selection.
+						+ Rewards are given for clauses selected in the proof.
+						+ If no proof is found, all rewards are zero.
 					</aside>
 
 				</section>
@@ -434,7 +363,14 @@ Example "heuristic" in RL mode:
 				<section>
 					<h3>Experiment Architecture</h3>
 					<img src="images/architecture.svg" style="background:whitesmoke">
-					<aside class="notes"></aside>
+					<aside class="notes">
+						+ Main = Gatherer + Trainer
+						+ Gatherer starts E and communicates with it using named pipes.
+						+ Gatherer sends proof attempts to trainer
+						+ Trainer sends latest policy to gatherer
+						+ Policy saved to disk.
+						+ At test time, only the "gatherer" is used.
+					</aside>
 				</section>
 
 				<section>
@@ -491,7 +427,7 @@ Example "heuristic" in RL mode:
 				</section>
 
 				<section>
-					<h3>Results</h3>
+					<h3>Results on MPTPTP2078 Dataset</h3>
 					<table style="font-size:0.7em;">
 						<thead>
 							<tr>
@@ -532,7 +468,7 @@ Example "heuristic" in RL mode:
 						</tbody>
 					</table>
 					<aside class="notes">
-						So we did some experiments using the MPTPTP2078 dataset and we did 5-fold cross validation.
+						+ 5 fold cross-validation averages presented.
 
 						The first thing we looked at was the number of problems solved by each approach (averaged across the 5 folds).
 						They all solved roughly the same number of problems, with the distilled categorical model solving the most.
